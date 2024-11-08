@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Preorder Toko</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: #007bff;
+            color: #fff;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .product {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .product:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .product img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .error {
+            color: red;
+            margin-top: 5px;
+        }
+        @media (max-width: 600px) {
+            body {
+                font-size: 14px; /* Ukuran font lebih kecil untuk tampilan lebih baik */
+            }
+            .container {
+                padding: 10px;
+            }
+            .button {
+                width: 100%;
+                padding: 15px;
+            }
+            .product {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Toko Preorder</h1>
+</header>
+
+<!-- Halaman Pendaftaran -->
+<div class="container" id="register-container">
+    <h2>Pendaftaran</h2>
+    <div class="form-group">
+        <input type="text" id="registerUsername" placeholder="Username" required>
+        <div id="usernameError" class="error"></div>
+    </div>
+    <div class="form-group">
+        <input type="email" id="registerEmail" placeholder="Email" required>
+        <div id="emailError" class="error"></div>
+    </div>
+    <div class="form-group">
+        <input type="password" id="registerPassword" placeholder="Password" required>
+    </div>
+    <div class="form-group">
+        <select id="userRole">
+            <option value="user">Pengguna</option>
+            <option value="admin">Admin</option>
+        </select>
+    </div>
+    <button class="button" onclick="registerUser()">Daftar</button>
+    <button class="button" style="margin-top: 10px;" onclick="goToLogin()">Sudah punya akun? Login di sini</button>
+</div>
+
+<!-- Halaman Login -->
+<div class="container" id="login-container" style="display: none;">
+    <h2>Login</h2>
+    <div class="form-group">
+        <input type="text" id="loginUsername" placeholder="Username" required>
+    </div>
+    <div class="form-group">
+        <input type="password" id="loginPassword" placeholder="Password" required>
+    </div>
+    <button class="button" onclick="loginUser()">Login</button>
+</div>
+
+<!-- Halaman Admin -->
+<div class="container" id="admin-container" style="display: none;">
+    <h2>Pengaturan Admin</h2>
+    <div class="form-group">
+        <input type="text" id="adminWhatsApp" placeholder="Nomor WhatsApp Admin" required>
+    </div>
+    <div class="form-group">
+        <input type="text" id="adminRekening" placeholder="Nomor Rekening" required>
+    </div>
+    <button class="button" onclick="saveAdminInfo()">Simpan Info Admin</button>
+    <button class="button" style="background: red; margin-top: 10px;" onclick="resetData()">Reset Semua Data</button>
+    
+    <h2>Barang Masuk</h2>
+    <div class="form-group">
+        <select id="namaBarang" required>
+            <option value="" disabled selected>Pilih Nama Barang</option>
+            <option value="Produk 1">Produk 1</option>
+            <option value="Produk 2">Produk 2</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <input type="date" id="barangMasukTanggal" required>
+    </div>
+    <div class="form-group">
+        <input type="number" id="jumlahBarang" placeholder="Jumlah Barang" min="1" required>
+    </div>
+    <div class="form-group">
+        <input type="number" id="hargaSatuan" placeholder="Harga Satuan" min="0" required>
+    </div>
+    <div class="form-group">
+        <input type="number" id="hargaLusinan" placeholder="Harga Lusinan" min="0" required>
+    </div>
+    <button class="button" onclick="addBarangMasuk()">Tambah Barang Masuk</button>
+    
+    <h2>Stok Barang</h2>
+    <div id="stokBarangContainer"></div>
+    
+    <button class="button" onclick="goToLogin()">Kembali ke Halaman Login</button>
+</div>
+
+<!-- Menu Utama -->
+<div class="container" id="menu-container" style="display: none;">
+    <h2>Menu Utama</h2>
+    <div class="product">
+        <h3>Produk 1</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 1">
+        <p>Harga: Rp 100.000</p>
+        <input type="number" id="quantity1" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 1', 100000, 'quantity1')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 1', 100000, 'quantity1')">Pesan Via Transfer</button>
+    </div>
+    <div class="product">
+        <h3>Produk 2</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 2">
+        <p>Harga: Rp 150.000</p>
+        <input type="number" id="quantity2" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 2', 150000, 'quantity2')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 2', 150000, 'quantity2')">Pesan Via Transfer</button>
+    </div>
+    <div class="product">
+        <h3>Produk 3</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 3">
+        <p>Harga: Rp 200.000</p>
+        <input type="number" id="quantity3" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 3', 200000, 'quantity3')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 3', 200000, 'quantity3')">Pesan Via Transfer</button>
+    </div>
+    <div class="product">
+        <h3>Produk 4</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 4">
+        <p>Harga: Rp 250.000</p>
+        <input type="number" id="quantity4" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 4', 250000, 'quantity4')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 4', 250000, 'quantity4')">Pesan Via Transfer</button>
+    </div>
+    <div class="product">
+        <h3>Produk 5</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 5">
+        <p>Harga: Rp 300.000</p>
+        <input type="number" id="quantity5" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 5', 300000, 'quantity5')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 5', 300000, 'quantity5')">Pesan Via Transfer</button>
+    </div>
+    <div class="product">
+        <h3>Produk 6</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 6">
+        <p>Harga: Rp 350.000</p>
+        <input type="number" id="quantity6" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 6', 350000, 'quantity6')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 6', 350000, 'quantity6')">Pesan Via Transfer</button>
+    </div>
+    <div class="product">
+        <h3>Produk 7</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 7">
+        <p>Harga: Rp 400.000</p>
+        <input type="number" id="quantity7" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 7', 400000, 'quantity7')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 7', 400000, 'quantity7')">Pesan Via Transfer</button>
+    </div>
+    <div class="product">
+        <h3>Produk 8</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 8">
+        <p>Harga: Rp 450.000</p>
+        <input type="number" id="quantity8" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 8', 450000, 'quantity8')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 8', 450000, 'quantity8')">Pesan Via Transfer</button>
+    </div>
+    <div class="product">
+        <h3>Produk 9</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 9">
+        <p>Harga: Rp 500.000</p>
+        <input type="number" id="quantity9" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 9', 500000, 'quantity9')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 9', 500000, 'quantity9')">Pesan Via Transfer</button>
+    </div>
+    <div class="product">
+        <h3>Produk 10</h3>
+        <img src="https://via.placeholder.com/300" alt="Produk 10">
+        <p>Harga: Rp 550.000</p>
+        <input type="number" id="quantity10" placeholder="Jumlah" min="1" max="10">
+        <button class="button" onclick="orderViaWhatsApp('Produk 10', 550000, 'quantity10')">Pesan Via WhatsApp</button>
+        <button class="button" onclick="orderViaTransfer('Produk 10', 550000, 'quantity10')">Pesan Via Transfer</button>
+    </div>
+</div>
+
+<script>
+    // Simulasi data pengguna dan stok barang
+    const users = [];
+    let adminWhatsApp = '';
+    let adminRekening = '';
+    let stokBarang = {
+        'Produk 1': { stock: 0, pricePerUnit: 100000, pricePerLusin: 0 },
+        'Produk 2': { stock: 0, pricePerUnit: 150000, pricePerLusin: 0 },
+        'Produk 3': { stock: 0, pricePerUnit: 200000, pricePerLusin: 0 },
+        'Produk 4': { stock: 0, pricePerUnit: 250000, pricePerLusin: 0 },
+        'Produk 5': { stock: 0, pricePerUnit: 300000, pricePerLusin: 0 },
+        'Produk 6': { stock: 0, pricePerUnit: 350000, pricePerLusin: 0 },
+        'Produk 7': { stock: 0, pricePerUnit: 400000, pricePerLusin: 0 },
+        'Produk 8': { stock: 0, pricePerUnit: 450000, pricePerLusin: 0 },
+        'Produk 9': { stock: 0, pricePerUnit: 500000, pricePerLusin: 0 },
+        'Produk 10': { stock: 0, pricePerUnit: 550000, pricePerLusin: 0 }
+    };
+
+    function goToLogin() {
+        document.getElementById('register-container').style.display = 'none';
+        document.getElementById('login-container').style.display = 'block';
+    }
+
+    // Fungsi untuk pendaftaran, login, dan admin tetap sama...
+
+    function orderViaWhatsApp(productName, price, quantityId) {
+        const quantity = document.getElementById(quantityId).value;
+        const totalPrice = price * quantity;
+        const message = `Halo, saya ingin memesan produk:\n- Nama Produk: ${productName}\n- Jumlah: ${quantity}\n- Total Harga: Rp ${totalPrice}`;
+        const whatsappUrl = `https://api.whatsapp.com/send?phone=${adminWhatsApp}&text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+
+    function orderViaTransfer(productName, price, quantityId) {
+        const quantity = document.getElementById(quantityId).value;
+        const totalPrice = price * quantity;
+        alert(`Silakan transfer Rp ${totalPrice} ke rekening berikut:\n\nRekening: ${adminRekening}\nAtas Nama: Toko Preorder\n\nSetelah transfer, harap konfirmasi ke kami.`);
+    }
+</script>
+
+</body>
+</html>
